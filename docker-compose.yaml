@@ -1,0 +1,31 @@
+version: '3.1'
+
+services:
+
+  api: # Backend Service
+    build: .
+    container_name: "api"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ".:/api"
+
+  db: # Database
+    image: postgres
+    restart: always
+    container_name: "database"
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_DB: friendify-dev
+    ports: 
+      - 5555:5432
+    volumes:
+      - ./postgres/data:/var/lib/postgresql
+
+  redis: # Cache
+    image: redis
+    restart: always
+    container_name: "redis"
+    ports:
+      - 6868:6379
