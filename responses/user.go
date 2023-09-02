@@ -1,5 +1,9 @@
 package responses
 
-type LoginReponse struct {
+import "main/models"
+
+type LoginResponse struct {
 	AccessToken string `json:"access_token"`
 }
+
+type RegisterResponse = models.User

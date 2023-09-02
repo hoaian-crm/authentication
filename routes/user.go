@@ -21,20 +21,14 @@ func NewUserController(route *gin.RouterGroup) {
 
 	route = route.Group("/users")
 	{
-		route.POST("/register", func(context *gin.Context) {
-			userService.CreateOne(context)
-		})
-		route.POST("/login", func(context *gin.Context) {
-			userService.Login(context)
-		})
-		route.GET("/profile", middlewares.Authorization(), func(context *gin.Context) {
-			userService.GetProfile(context)
-		})
-		route.PUT("/active", func(context *gin.Context) {
-			userService.ActiveUser(context)
-		})
-		route.PUT("/update_password", middlewares.Authorization(), func(context *gin.Context) {
-			userService.UpdatePassword(context)
-		})
+		route.POST("/register", userService.Register)
+
+		route.POST("/login", userService.Login)
+
+		route.GET("/profile", middlewares.Authorization(), userService.GetProfile)
+
+		route.PUT("/active", userService.ActiveUser)
+
+		route.PUT("/update_password", middlewares.Authorization(), userService.UpdatePassword)
 	}
 }

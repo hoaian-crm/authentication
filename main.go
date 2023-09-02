@@ -3,12 +3,18 @@ package main
 import (
 	"fmt"
 	"main/config"
+	"main/docs"
 	"main/routes"
 	"main/validator"
-	docs "github.com/https://github.com/friendify-org/authentication-services/docs"
 
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
+
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
 
 func main() {
 
@@ -23,14 +29,17 @@ func main() {
 	config.InitializeMailSender()
 
 	r := gin.Default()
+	docs.SwaggerInfo.BasePath = "/api/v1"
 
 	validator.ValidatorBinding()
 
-	api := r.Group("/api")
+	api := r.Group("/api/v1")
 	{
 		routes.NewUserController(api)
 		routes.NewMailController(api)
 	}
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.PersistAuthorization(true)))
 
 	r.Run()
 }

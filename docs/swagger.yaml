@@ -1,4 +1,210 @@
+definitions:
+  config.Message:
+    properties:
+      code:
+        type: integer
+      description:
+        type: string
+      field:
+        type: string
+      meta_data:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  config.Response:
+    properties:
+      data:
+        $ref: '#/definitions/config.ResponseData'
+      messages:
+        items:
+          $ref: '#/definitions/config.Message'
+        type: array
+    type: object
+  config.ResponseData:
+    properties:
+      limit:
+        default: 1
+        type: integer
+      offset:
+        default: 0
+        type: integer
+      result: {}
+      total:
+        default: 1
+        type: integer
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  responses.LoginResponse:
+    properties:
+      access_token:
+        type: string
+    type: object
+  responses.RegisterResponse:
+    properties:
+      avatar:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      display_name:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      refferal_code:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  user_dto.ActiveUserDto:
+    properties:
+      email:
+        type: string
+      otp_code:
+        type: string
+    type: object
+  user_dto.Create:
+    properties:
+      avatar:
+        type: string
+      display_name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  user_dto.LoginDto:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  user_dto.UpdatePassword:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        type: string
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /users/active:
+    put:
+      consumes:
+      - application/json
+      description: Active new user
+      parameters:
+      - description: Active user data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user_dto.ActiveUserDto'
+      responses: {}
+      summary: Active account
+      tags:
+      - User
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Call this api to login
+      parameters:
+      - description: Login data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user_dto.LoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/config.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/responses.LoginResponse'
+              type: object
+      summary: Login user
+      tags:
+      - User
+  /users/profile:
+    get:
+      consumes:
+      - application/json
+      description: Get user's profile by access token
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Get user's profile
+      tags:
+      - User
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Call this api to register new user
+      parameters:
+      - description: Login data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user_dto.Create'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/config.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/responses.RegisterResponse'
+              type: object
+      summary: Register new user
+      tags:
+      - User
+  /users/update_password:
+    put:
+      consumes:
+      - application/json
+      description: Call api to update password
+      parameters:
+      - description: Update password data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user_dto.UpdatePassword'
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Update password of user
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

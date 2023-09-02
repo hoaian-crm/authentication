@@ -9,6 +9,7 @@ import (
 )
 
 func Authorization() gin.HandlerFunc {
+
 	return func(context *gin.Context) {
 		authorizationHeaders := strings.Split(context.GetHeader("Authorization"), " ")
 		if len(authorizationHeaders) < 2 {
