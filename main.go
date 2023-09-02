@@ -5,6 +5,7 @@ import (
 	"main/config"
 	"main/routes"
 	"main/validator"
+	docs "github.com/https://github.com/friendify-org/authentication-services/docs"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,11 +30,6 @@ func main() {
 	{
 		routes.NewUserController(api)
 		routes.NewMailController(api)
-		routes.NewPointUseCaseController(api)
-		routes.NewPointUseController(api)
-		routes.NewMessageController(api)
-		routes.NewChannelController(api)
-		routes.NewChannelDetailController(api)
 	}
 
 	r.Run()

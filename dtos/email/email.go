@@ -1,4 +1,4 @@
-package dtos
+package email_dto
 
 type SendMailToUserDto struct {
 	UserId  int    `json:"userId"`
