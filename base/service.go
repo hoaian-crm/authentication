@@ -11,7 +11,7 @@ type Service[Model any] struct {
 	Repository Repository[Model]
 }
 
-func (service Service[Model]) CreateOne(context *gin.Context) {
+func (service Service[Model]) CreateOne(context *gin.Context) error {
 	var dto Model
 	if err := context.ShouldBind(&dto); err != nil {
 		messages := config.MessagesBuilder(err)
@@ -20,7 +20,7 @@ func (service Service[Model]) CreateOne(context *gin.Context) {
 			Messages: messages,
 		}
 		response.BadRequest(context)
-		return
+		return err
 	}
 
 	createdRecord := service.Repository.CreateOne(&dto)
@@ -33,7 +33,7 @@ func (service Service[Model]) CreateOne(context *gin.Context) {
 			}},
 		}
 		response.InternalServerError(context)
-		return
+		return createdRecord.Error
 	}
 	response := config.Response{
 		Data: config.ResponseData{
@@ -46,7 +46,7 @@ func (service Service[Model]) CreateOne(context *gin.Context) {
 	}
 
 	response.Created(context)
-	return
+	return nil
 }
 
 func (service Service[Model]) FindOne(context *gin.Context) {

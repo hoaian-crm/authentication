@@ -1,7 +1,7 @@
 package email_dto
 
 type SendMailToUserDto struct {
-	UserId  int    `json:"userId"`
+	SendTo  string `json:"sendTo"`
 	Content string `json:"content"`
-	Subject string `json:"subjet"`
+	Subject string `json:"subject"`
 }

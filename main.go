@@ -1,15 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"main/config"
-	"main/docs"
+	mail_queue "main/queue/mail"
 	"main/routes"
 	"main/validator"
 
 	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 //	@securityDefinitions.apikey	BearerAuth
@@ -20,26 +17,23 @@ func main() {
 
 	config.SetupEnvirontment()
 
-	fmt.Printf("------------------- Connecting to database ----------------")
-
 	config.ConnectDataBase()
 
 	config.ConnectRedis()
 
 	config.InitializeMailSender()
 
-	r := gin.Default()
-	docs.SwaggerInfo.BasePath = "/api/v1"
+	config.ConnectQueue()
 
+	r := gin.Default()
 	validator.ValidatorBinding()
 
 	api := r.Group("/api/v1")
 	{
 		routes.NewUserController(api)
-		routes.NewMailController(api)
 	}
 
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.PersistAuthorization(true)))
+	mail_queue.New()
 
 	r.Run()
 }
