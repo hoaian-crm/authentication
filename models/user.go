@@ -20,6 +20,7 @@ type User struct {
 	RefferalCode string `json:"refferal_code"`
 	OtpCode      string `json:"-"`
 	Active       bool   `json:"-"`
+	Iss          string `json:"-"`
 }
 
 type UserClaims struct {
@@ -55,6 +56,7 @@ func (user *User) SignToken() string {
 		*user,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
+			Issuer:    user.Iss,
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)

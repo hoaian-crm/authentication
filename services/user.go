@@ -3,8 +3,10 @@ package services
 import (
 	"main/base"
 	"main/config"
+	email_dto "main/dtos/email"
 	user_dto "main/dtos/user"
 	"main/models"
+	mail_queue "main/queue/mail"
 	"main/repositories"
 	"main/responses"
 	"main/utils"
@@ -27,7 +29,48 @@ type UserService struct {
 // @success 200 {object} config.Response{data=responses.RegisterResponse}
 // @Param   request  body     user_dto.Create  true "Login data"
 func (userService UserService) Register(context *gin.Context) {
-	userService.Service.CreateOne(context)
+	var dto models.User
+	if err := context.ShouldBind(&dto); err != nil {
+		messages := config.MessagesBuilder(err)
+		response := config.Response{
+			Data:     config.NoData(),
+			Messages: messages,
+		}
+		response.BadRequest(context)
+		return
+	}
+
+	dto.Iss = config.EnvirontmentVariables.UserIss
+
+	createdRecord := userService.Repository.CreateOne(&dto)
+	if createdRecord.Error != nil {
+		response := config.Response{
+			Data: config.NoData(),
+			Messages: []config.Message{{
+				Code:        -1,
+				Description: createdRecord.Error.Error(),
+			}},
+		}
+		response.InternalServerError(context)
+		return
+	}
+	response := config.Response{
+		Data: config.ResponseData{
+			Limit:  1,
+			Total:  1,
+			Offset: 0,
+			Result: dto,
+		},
+		Messages: []config.Message{},
+	}
+
+	go mail_queue.SendMailToUser(email_dto.SendMailToUserDto{
+		SendTo:  dto.Email,
+		Content: dto.OtpCode,
+		Subject: "Friendify Verify Code",
+	})
+
+	response.Created(context)
 }
 
 // @Summary	Login user
