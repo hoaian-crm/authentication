@@ -35,8 +35,8 @@ func SetupEnvirontment() {
 		MailPassword:  os.Getenv("MAIL_PASSWORD"),
 		MailHost:      os.Getenv("MAIL_HOST"),
 		MailPort:      os.Getenv("MAIL_PORT"),
-    RedisHost:     os.Getenv("REDIS_HOST"),
-    RedisPass:     os.Getenv("REDIS_PASSWORD"),
-    RedisDb:       os.Getenv("REDIS_DB"),
+		RedisHost:     os.Getenv("REDIS_HOST"),
+		RedisPass:     os.Getenv("REDIS_PASSWORD"),
+		RedisDb:       os.Getenv("REDIS_DB"),
 	}
 }
