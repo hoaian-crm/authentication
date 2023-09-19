@@ -196,6 +196,7 @@ func (userService UserService) UpdatePassword(context *gin.Context) {
 			Messages: []config.Message{config.Messages["invalid_email_password"]},
 		}
 		response.BadRequest(context)
+		return
 	}
 
 	user.Password = utils.HashPassword(data.NewPassword)
