@@ -123,7 +123,13 @@ func (userService UserService) Login(context *gin.Context) {
 // @Security BearerAuth
 func (userService UserService) GetProfile(context *gin.Context) {
 
-	user := context.MustGet("user").(models.User)
+	userRepository := repositories.UserRepository{}
+
+	userId := context.MustGet("userId").(int64)
+
+	user, _ := userRepository.FindOne(&models.User{
+		ID: userId,
+	})
 
 	response := config.Response{
 		Data: config.ResponseData{
@@ -174,11 +180,13 @@ func (userService UserService) ActiveUser(context *gin.Context) {
 // @Param request body user_dto.UpdatePassword true "Update password data"
 // @Security BearerAuth
 func (userService UserService) UpdatePassword(context *gin.Context) {
+
+	userId := context.MustGet("userId").(int64)
+
 	data := base.GetData[user_dto.UpdatePassword](context)
-	userToken := context.MustGet("user").(models.User)
 
 	user, _ := userService.Repository.FindOne(&models.User{
-		ID: userToken.ID,
+		ID: userId,
 	})
 
 	ok := utils.ComparePassword(user.Password, data.CurrentPassword)
