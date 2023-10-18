@@ -3,7 +3,7 @@ package responses
 import "main/models"
 
 type LoginResponse struct {
-	AccessToken string `json:"access_token"`
+	AccessToken string `json:"accessToken"`
 }
 
 type RegisterResponse = models.User

@@ -6,6 +6,7 @@ import (
 	"main/routes"
 	"main/validator"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,6 +35,8 @@ func main() {
 	}
 
 	mail_queue.New()
+
+	r.Use(cors.Default())
 
 	r.Run()
 }
