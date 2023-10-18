@@ -27,6 +27,7 @@ func main() {
 	config.ConnectQueue()
 
 	r := gin.Default()
+	r.Use(cors.Default())
 	validator.ValidatorBinding()
 
 	api := r.Group("/api/v1")
@@ -35,8 +36,6 @@ func main() {
 	}
 
 	mail_queue.New()
-
-	r.Use(cors.Default())
 
 	r.Run()
 }
