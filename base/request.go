@@ -15,6 +15,7 @@ func GetData[Dto any](context *gin.Context) Dto {
 			Messages: messages,
 		}
 		response.BadRequest(context)
+		context.Abort()
 	}
 	return result
 }
