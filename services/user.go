@@ -84,7 +84,8 @@ func (userService UserService) Register(context *gin.Context) {
 // @Param   request  body     user_dto.LoginDto  true "Login data"
 func (userService UserService) Login(context *gin.Context) {
 
-	data := base.GetData[user_dto.LoginDto](context)
+	// data := base.GetData[user_dto.LoginDto](context)
+	data := context.MustGet("data").(user_dto.LoginDto)
 
 	userRecord, _ := userService.Repository.FindOne(&models.User{
 		Email:  data.Email,
@@ -148,7 +149,8 @@ func (userService UserService) GetProfile(context *gin.Context) {
 // @Router /users/active [put]
 // @Param request body user_dto.ActiveUserDto true "Active user data"
 func (userService UserService) ActiveUser(context *gin.Context) {
-	data := base.GetData[user_dto.ActiveUserDto](context)
+	// data := base.GetData[user_dto.ActiveUserDto](context)
+	data := context.MustGet("data").(user_dto.ActiveUserDto)
 	userRecord, _ := userService.Repository.FindOne(&models.User{
 		Email: data.Email,
 	})
@@ -183,7 +185,8 @@ func (userService UserService) UpdatePassword(context *gin.Context) {
 
 	userId := context.MustGet("userId").(int64)
 
-	data := base.GetData[user_dto.UpdatePassword](context)
+	// data := base.GetData[user_dto.UpdatePassword](context)
+	data := context.MustGet("data").(user_dto.UpdatePassword)
 
 	user, _ := userService.Repository.FindOne(&models.User{
 		ID: userId,
