@@ -27,7 +27,13 @@ func main() {
 	config.ConnectQueue()
 
 	r := gin.Default()
-	r.Use(cors.Default())
+	r.Use(cors.New(cors.Config{
+		AllowCredentials: true,
+		AllowAllOrigins:  true,
+		AllowHeaders:     []string{"*"},
+		AllowMethods:     []string{"*"},
+	}))
+
 	validator.ValidatorBinding()
 
 	api := r.Group("/api/v1")

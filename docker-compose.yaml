@@ -1,7 +1,6 @@
-version: '3.1'
+version: "3.1"
 
 services:
-
   authentication-service:
     # Backend Service
     build: .
@@ -9,43 +8,3 @@ services:
       - "8080:8080"
     volumes:
       - ".:/api"
-
-  database:
-    # Database
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_USER: postgres
-      POSTGRES_DB: friendify-dev
-    ports:
-      - 5555:5432
-    volumes:
-      - ../docker/postgres:/var/lib/postgresql
-
-  redis:
-    # Cache
-    image: redis
-    restart: always
-    ports:
-      - 6868:6379
-
-  notification-service:
-    # image: 11112003/frnoti:master
-    build:
-      context: ../notification-service
-      dockerfile: ../notification-service/Dockerfile
-    ports:
-      - 8686:8080
-    volumes:
-      - "../notification-service:/api"
-
-  message-broker:
-    container_name: message-broker
-    image: rabbitmq:3-management
-    environment:
-      - RABBITMQ_DEFAULT_USER=rabbitmq
-      - RABBITMQ_DEFAULT_PASS=password
-    ports:
-      - 5672:5672
-      - 15672:15672
