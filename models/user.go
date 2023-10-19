@@ -11,13 +11,13 @@ import (
 )
 
 type User struct {
-	gorm.Model
+	BaseModel
 	ID           int64
 	Email        string `gorm:"unique" binding:"email,must_unique=users" json:"email"`
-	DisplayName  string `json:"display_name" binding:"min_length=10"`
+	DisplayName  string `json:"displayName" binding:"min_length=10"`
 	Password     string `binding:"min_length=8" json:"password"`
 	Avatar       string `json:"avatar"`
-	RefferalCode string `json:"refferal_code"`
+	ReferralCode string `json:"referralCode"`
 	OtpCode      string `json:"-"`
 	Active       bool   `json:"-"`
 	Iss          string `json:"-"`
@@ -31,7 +31,7 @@ type UserClaims struct {
 func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
 
 	// Make user reffer_code random string with length is 8
-	user.RefferalCode = utils.RandomString(8)
+	user.ReferralCode = utils.RandomString(8)
 
 	// Make user otp_code random string with length is 8
 	user.OtpCode = utils.RandomString(8)
