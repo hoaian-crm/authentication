@@ -19,7 +19,7 @@ type User struct {
 	Avatar       string `json:"avatar"`
 	ReferralCode string `json:"referralCode"`
 	OtpCode      string `json:"-"`
-	Active       bool   `json:"-"`
+	Active       bool   `json:"active"`
 	Iss          string `json:"-"`
 }
 
