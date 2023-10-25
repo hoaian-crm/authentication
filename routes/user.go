@@ -23,6 +23,11 @@ func NewUserController(route *gin.RouterGroup) {
 
 	route = route.Group("/users")
 	{
+
+		route.Use(middlewares.InitModel[models.User](&models.User{}))
+
+		route.GET("/", middlewares.BindQuery[user_dto.ListUserDto]("query"), userService.ListUser)
+
 		route.POST("/register", userService.Register)
 
 		route.POST("/login", base.GetData[user_dto.LoginDto], userService.Login)
@@ -32,5 +37,6 @@ func NewUserController(route *gin.RouterGroup) {
 		route.PUT("/active", userService.ActiveUser)
 
 		route.PUT("/update_password", middlewares.Authorization(), userService.UpdatePassword)
+
 	}
 }

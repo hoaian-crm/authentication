@@ -213,3 +213,12 @@ func (userService UserService) UpdatePassword(context *gin.Context) {
 	}
 	response.UpdateSuccess(context)
 }
+
+// func (userService UserService) ListUser(context *gin.Context) {
+// 	query := context.MustGet("query").(user_dto.ListUserDto)
+// 	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
+
+// 	if query.Limit == 0 {
+// 		query.Limit = 10
+// 	}
+// }
