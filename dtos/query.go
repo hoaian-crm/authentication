@@ -1,8 +1,12 @@
 package dtos
 
 type Query struct {
-	Limit        int      `json:"limit" form:"limit"`
-	Offset       int      `json:"offset" form:"offset"`
-	SearchFields []string `json:"search_fields" form:"search_fields"`
-	Keywords     []string `json:"keywords" form:"keywords"`
+	Limit  int `json:"limit" form:"limit" default:"10"`
+	Offset int `json:"offset" form:"offset" default:"0"`
+}
+
+func (query *Query) SetDefaults() {
+	if query.Limit == 0 {
+		query.Limit = 10
+	}
 }

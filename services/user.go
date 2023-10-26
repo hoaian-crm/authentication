@@ -3,6 +3,7 @@ package services
 import (
 	"main/base"
 	"main/config"
+	"main/constants"
 	email_dto "main/dtos/email"
 	user_dto "main/dtos/user"
 	"main/models"
@@ -12,6 +13,7 @@ import (
 	"main/utils"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type UserService struct {
@@ -126,10 +128,12 @@ func (userService UserService) GetProfile(context *gin.Context) {
 
 	userRepository := repositories.UserRepository{}
 
-	userId := context.MustGet("userId").(int64)
+	userId := context.MustGet("userId").(uint)
 
 	user, _ := userRepository.FindOne(&models.User{
-		ID: userId,
+		BaseModel: models.BaseModel{
+			ID: userId,
+		},
 	})
 
 	response := config.Response{
@@ -183,14 +187,14 @@ func (userService UserService) ActiveUser(context *gin.Context) {
 // @Security BearerAuth
 func (userService UserService) UpdatePassword(context *gin.Context) {
 
-	userId := context.MustGet("userId").(int64)
-
-	// data := base.GetData[user_dto.UpdatePassword](context)
-	data := context.MustGet("data").(user_dto.UpdatePassword)
+	userId := context.MustGet("userId").(uint)
 
 	user, _ := userService.Repository.FindOne(&models.User{
-		ID: userId,
+		BaseModel: models.BaseModel{
+			ID: userId,
+		},
 	})
+	data := context.MustGet("data").(user_dto.UpdatePassword)
 
 	ok := utils.ComparePassword(user.Password, data.CurrentPassword)
 	if !ok {
@@ -214,11 +218,29 @@ func (userService UserService) UpdatePassword(context *gin.Context) {
 	response.UpdateSuccess(context)
 }
 
-// func (userService UserService) ListUser(context *gin.Context) {
-// 	query := context.MustGet("query").(user_dto.ListUserDto)
-// 	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
+func (userService UserService) ListUser(context *gin.Context) {
+	query := context.MustGet("query").(user_dto.ListUserDto)
+	query.SetDefaults()
+	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
 
-// 	if query.Limit == 0 {
-// 		query.Limit = 10
-// 	}
-// }
+	db.Where("display_name like ? or email like ?", "%"+query.DisplayName+"%", "%"+query.Email+"%")
+
+	var total int64
+	db.Count(&total)
+	db.Limit(query.Limit)
+
+	result := []models.User{}
+	db.Find(&result)
+
+	response := config.Response{
+		Data: config.ResponseData{
+			Result: result,
+			Total:  total,
+			Offset: query.Offset,
+			Limit:  query.Limit,
+		},
+		Messages: []config.Message{config.Messages["get_success"]},
+	}
+
+	response.GetSuccess(context)
+}

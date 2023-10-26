@@ -12,7 +12,6 @@ import (
 
 type User struct {
 	BaseModel
-	ID           int64
 	Email        string `gorm:"unique" binding:"email,must_unique=users" json:"email"`
 	DisplayName  string `json:"displayName" binding:"min_length=10"`
 	Password     string `binding:"min_length=8" json:"password"`
