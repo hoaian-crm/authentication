@@ -26,7 +26,7 @@ func NewUserController(route *gin.RouterGroup) {
 
 		route.Use(middlewares.InitModel[models.User](&models.User{}))
 
-		route.GET("/", middlewares.BindQuery[user_dto.ListUserDto]("query"), userService.ListUser)
+		route.GET("/list", middlewares.BindQuery[user_dto.ListUserDto]("query"), userService.ListUser)
 
 		route.POST("/register", userService.Register)
 
