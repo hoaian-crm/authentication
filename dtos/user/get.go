@@ -13,7 +13,7 @@ type ListUserDto struct {
 func (query *ListUserDto) SetDefaults() {
 	query.Query.SetDefaults()
 
-	if query.DisplayName == "" && query.Email {
+	if query.DisplayName == "" && query.Email == "" {
 		return
 	}
 

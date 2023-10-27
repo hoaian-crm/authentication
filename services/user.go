@@ -219,19 +219,28 @@ func (userService UserService) UpdatePassword(context *gin.Context) {
 }
 
 func (userService UserService) ListUser(context *gin.Context) {
+
+	// Prepare data
 	query := context.MustGet("query").(user_dto.ListUserDto)
 	query.SetDefaults()
 	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
 
-	db.Where("display_name like ? or email like ?", "%"+query.DisplayName+"%", "%"+query.Email+"%")
+	// Search
+	db.Where("displayName like ? or email like ?", "%"+query.DisplayName+"%", "%"+query.Email+"%")
 
+	// Order
+	db.Order(query.Order)
+
+	// Count records
 	var total int64
 	db.Count(&total)
 	db.Limit(query.Limit)
 
+	// Get result
 	result := []models.User{}
 	db.Find(&result)
 
+	// Response to client
 	response := config.Response{
 		Data: config.ResponseData{
 			Result: result,

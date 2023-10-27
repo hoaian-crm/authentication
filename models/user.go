@@ -12,12 +12,12 @@ import (
 
 type User struct {
 	BaseModel
-	Email        string `gorm:"unique" binding:"email,must_unique=users" json:"email"`
-	DisplayName  string `json:"displayName" binding:"min_length=10"`
+	Email        string `gorm:"unique;" binding:"email,must_unique=users" json:"email"`
+	DisplayName  string `json:"displayName" binding:"min_length=10" gorm:"column:displayName"`
 	Password     string `binding:"min_length=8" json:"password"`
 	Avatar       string `json:"avatar"`
-	ReferralCode string `json:"referralCode"`
-	OtpCode      string `json:"-"`
+	ReferralCode string `json:"referralCode" gorm:"column:referralCode"`
+	OtpCode      string `json:"-" gorm:"column:otpCode"`
 	Active       bool   `json:"active"`
 	Iss          string `json:"-"`
 }
