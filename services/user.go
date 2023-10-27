@@ -4,10 +4,9 @@ import (
 	"main/base"
 	"main/config"
 	"main/constants"
-	email_dto "main/dtos/email"
 	user_dto "main/dtos/user"
 	"main/models"
-	mail_queue "main/queue/mail"
+	user_queue "main/queue/user"
 	"main/repositories"
 	"main/responses"
 	"main/utils"
@@ -66,11 +65,7 @@ func (userService UserService) Register(context *gin.Context) {
 		Messages: []config.Message{},
 	}
 
-	go mail_queue.SendMailToUser(email_dto.SendMailToUserDto{
-		SendTo:  dto.Email,
-		Content: dto.OtpCode,
-		Subject: "Friendify Verify Code",
-	})
+	go user_queue.UserRegister(dto.GetInternal())
 
 	response.Created(context)
 }

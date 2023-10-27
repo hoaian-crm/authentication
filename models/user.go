@@ -22,6 +22,18 @@ type User struct {
 	Iss          string `json:"-"`
 }
 
+type InternalUser struct {
+	*User
+	OtpCode string `json:"otpCode"`
+}
+
+func (user *User) GetInternal() InternalUser {
+	return InternalUser{
+		User:    user,
+		OtpCode: user.OtpCode,
+	}
+}
+
 type UserClaims struct {
 	User
 	jwt.RegisteredClaims
