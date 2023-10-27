@@ -2,7 +2,6 @@ package base
 
 import (
 	"main/config"
-	"main/dtos"
 
 	"github.com/gin-gonic/gin"
 )
@@ -77,24 +76,24 @@ func (service Service[Model]) FindOne(context *gin.Context) {
 	return
 }
 
-func (service Service[Model]) FindAll(context *gin.Context) {
-	query := GetData[dtos.Query](context)
+// func (service Service[Model]) FindAll(context *gin.Context) {
+// 	query := GetData[dtos.Query](context)
 
-	if query.Limit == 0 {
-		query.Limit = 10
-	}
+// 	if query.Limit == 0 {
+// 		query.Limit = 10
+// 	}
 
-	var filter Model
+// 	var filter Model
 
-	result, total := service.Repository.FindAll(&filter, query)
+// 	result, total := service.Repository.FindAll(&filter, query)
 
-	response := config.Response{
-		Data: config.ResponseData{
-			Result: result,
-			Total:  total,
-		},
-		Messages: []config.Message{},
-	}
+// 	response := config.Response{
+// 		Data: config.ResponseData{
+// 			Result: result,
+// 			Total:  total,
+// 		},
+// 		Messages: []config.Message{},
+// 	}
 
-	response.GetSuccess(context)
-}
+// 	response.GetSuccess(context)
+// }

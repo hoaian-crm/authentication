@@ -44,7 +44,7 @@ func ToMap(data interface{}, tagName string) map[string]interface{} {
 
 	t := v.Type()
 	for i := 0; i < v.NumField(); i++ {
-		result[t.Field(i).Name] = v.Field(i).Interface();
+		result[t.Field(i).Name] = v.Field(i).Interface()
 	}
 
 	return result

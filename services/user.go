@@ -3,15 +3,16 @@ package services
 import (
 	"main/base"
 	"main/config"
-	email_dto "main/dtos/email"
+	"main/constants"
 	user_dto "main/dtos/user"
 	"main/models"
-	mail_queue "main/queue/mail"
+	user_queue "main/queue/user"
 	"main/repositories"
 	"main/responses"
 	"main/utils"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type UserService struct {
@@ -64,11 +65,7 @@ func (userService UserService) Register(context *gin.Context) {
 		Messages: []config.Message{},
 	}
 
-	go mail_queue.SendMailToUser(email_dto.SendMailToUserDto{
-		SendTo:  dto.Email,
-		Content: dto.OtpCode,
-		Subject: "Friendify Verify Code",
-	})
+	go user_queue.UserRegister(dto.GetInternal())
 
 	response.Created(context)
 }
@@ -84,7 +81,8 @@ func (userService UserService) Register(context *gin.Context) {
 // @Param   request  body     user_dto.LoginDto  true "Login data"
 func (userService UserService) Login(context *gin.Context) {
 
-	data := base.GetData[user_dto.LoginDto](context)
+	// data := base.GetData[user_dto.LoginDto](context)
+	data := context.MustGet("data").(user_dto.LoginDto)
 
 	userRecord, _ := userService.Repository.FindOne(&models.User{
 		Email:  data.Email,
@@ -125,10 +123,12 @@ func (userService UserService) GetProfile(context *gin.Context) {
 
 	userRepository := repositories.UserRepository{}
 
-	userId := context.MustGet("userId").(int64)
+	userId := context.MustGet("userId").(uint)
 
 	user, _ := userRepository.FindOne(&models.User{
-		ID: userId,
+		BaseModel: models.BaseModel{
+			ID: userId,
+		},
 	})
 
 	response := config.Response{
@@ -148,7 +148,8 @@ func (userService UserService) GetProfile(context *gin.Context) {
 // @Router /users/active [put]
 // @Param request body user_dto.ActiveUserDto true "Active user data"
 func (userService UserService) ActiveUser(context *gin.Context) {
-	data := base.GetData[user_dto.ActiveUserDto](context)
+	// data := base.GetData[user_dto.ActiveUserDto](context)
+	data := context.MustGet("data").(user_dto.ActiveUserDto)
 	userRecord, _ := userService.Repository.FindOne(&models.User{
 		Email: data.Email,
 	})
@@ -181,13 +182,14 @@ func (userService UserService) ActiveUser(context *gin.Context) {
 // @Security BearerAuth
 func (userService UserService) UpdatePassword(context *gin.Context) {
 
-	userId := context.MustGet("userId").(int64)
-
-	data := base.GetData[user_dto.UpdatePassword](context)
+	userId := context.MustGet("userId").(uint)
 
 	user, _ := userService.Repository.FindOne(&models.User{
-		ID: userId,
+		BaseModel: models.BaseModel{
+			ID: userId,
+		},
 	})
+	data := context.MustGet("data").(user_dto.UpdatePassword)
 
 	ok := utils.ComparePassword(user.Password, data.CurrentPassword)
 	if !ok {
@@ -209,4 +211,40 @@ func (userService UserService) UpdatePassword(context *gin.Context) {
 		Messages: []config.Message{config.Messages["update_success"]},
 	}
 	response.UpdateSuccess(context)
+}
+
+func (userService UserService) ListUser(context *gin.Context) {
+
+	// Prepare data
+	query := context.MustGet("query").(user_dto.ListUserDto)
+	query.SetDefaults()
+	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
+
+	// Search
+	db.Where("displayName like ? or email like ?", "%"+query.DisplayName+"%", "%"+query.Email+"%")
+
+	// Order
+	db.Order(query.Order)
+
+	// Count records
+	var total int64
+	db.Count(&total)
+	db.Limit(query.Limit)
+
+	// Get result
+	result := []models.User{}
+	db.Find(&result)
+
+	// Response to client
+	response := config.Response{
+		Data: config.ResponseData{
+			Result: result,
+			Total:  total,
+			Offset: query.Offset,
+			Limit:  query.Limit,
+		},
+		Messages: []config.Message{config.Messages["get_success"]},
+	}
+
+	response.GetSuccess(context)
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetData[Dto any](context *gin.Context) Dto {
+func GetData[Dto any](context *gin.Context) {
 	var result Dto
 	if err := context.ShouldBind(&result); err != nil {
 		messages := config.MessagesBuilder(err)
@@ -15,6 +15,7 @@ func GetData[Dto any](context *gin.Context) Dto {
 			Messages: messages,
 		}
 		response.BadRequest(context)
+		context.Abort()
 	}
-	return result
+	context.Set("data", result)
 }

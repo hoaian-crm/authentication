@@ -18,7 +18,9 @@ func (EmailRepository EmailRepository) SendMailToUser(data *models.Email) {
 	userId, _ := utils.StringToNumber(data.SendTo)
 
 	user, _ := userRepository.FindOne(&models.User{
-		ID: int64(userId),
+		BaseModel: models.BaseModel{
+			ID: uint(userId),
+		},
 	})
 
 	config.MailSender.SendMail(config.MailData{
