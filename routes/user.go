@@ -34,7 +34,7 @@ func NewUserController(route *gin.RouterGroup) {
 
 		route.GET("/profile", middlewares.Authorization(), userService.GetProfile)
 
-		route.PUT("/active", userService.ActiveUser)
+		route.PUT("/active", middlewares.BindBody[user_dto.ActiveUserDto]("data"), userService.ActiveUser)
 
 		route.PUT("/update_password", middlewares.Authorization(), userService.UpdatePassword)
 
