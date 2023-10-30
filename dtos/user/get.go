@@ -6,22 +6,10 @@ import (
 
 type ListUserDto struct {
 	dtos.Query
-	DisplayName string `json:"displayName" form:"displayName"`
-	Email       string `json:"email" form:"email"`
+	Keyword string `json:"keyword" form:"keyword"`
 }
 
 func (query *ListUserDto) SetDefaults() {
 	query.Query.SetDefaults()
-
-	if query.DisplayName == "" && query.Email == "" {
-		return
-	}
-
-	if query.DisplayName == "" {
-		query.DisplayName = "/"
-	}
-	if query.Email == "" {
-		query.Email = "/"
-	}
 
 }
