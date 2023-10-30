@@ -11,5 +11,4 @@ type ListUserDto struct {
 
 func (query *ListUserDto) SetDefaults() {
 	query.Query.SetDefaults()
-
 }
