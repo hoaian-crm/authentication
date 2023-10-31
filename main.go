@@ -39,6 +39,7 @@ func main() {
 	api := r.Group("/api/v1")
 	{
 		routes.NewUserController(api)
+		routes.NewPermissionController(api)
 	}
 
 	mail_queue.New()
