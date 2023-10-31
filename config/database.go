@@ -4,7 +4,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"gorm.io/gorm/schema"
 )
 
 var Db *gorm.DB
@@ -12,11 +11,8 @@ var Db *gorm.DB
 func ConnectDataBase() {
 	dsn := EnvirontmentVariables.GormDSN
 
-	nameConfig := schema.NamingStrategy{}
-
 	localDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger:         logger.Default.LogMode(logger.Info),
-		NamingStrategy: nameConfig,
+		Logger: logger.Default.LogMode(logger.Info),
 	})
 
 	if err != nil {

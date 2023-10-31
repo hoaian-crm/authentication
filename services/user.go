@@ -13,6 +13,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type UserService struct {
@@ -221,10 +222,12 @@ func (userService UserService) ListUser(context *gin.Context) {
 	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
 
 	// Search
-	db.Where("\"display_name\" like ? or email like ?", "%"+query.Keyword+"%", "%"+query.Keyword+"%")
+	db.Where("\"displayName\" like ? or email like ?", "%"+query.Keyword+"%", "%"+query.Keyword+"%")
 
 	// Order
-	db.Order(query.Order)
+	if query.Order != "" {
+		db.Order(clause.OrderByColumn{Column: clause.Column{Name: query.Order}, Desc: query.Direction == "desc"})
+	}
 
 	// Count records
 	var total int64
