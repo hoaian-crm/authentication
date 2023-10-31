@@ -221,7 +221,7 @@ func (userService UserService) ListUser(context *gin.Context) {
 	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
 
 	// Search
-	db.Where("\"displayName\" like ? or email like ?", "%"+query.Keyword+"%", "%"+query.Keyword+"%")
+	db.Where("\"display_name\" like ? or email like ?", "%"+query.Keyword+"%", "%"+query.Keyword+"%")
 
 	// Order
 	db.Order(query.Order)
