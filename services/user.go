@@ -234,6 +234,9 @@ func (userService UserService) ListUser(context *gin.Context) {
 	db.Count(&total)
 	db.Limit(query.Limit)
 
+	// Offset
+	db.Offset(query.Offset)
+
 	// Get result
 	result := []models.User{}
 	db.Find(&result)
