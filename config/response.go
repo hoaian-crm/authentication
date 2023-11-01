@@ -48,3 +48,7 @@ func (response *Response) UnAuthorization(context *gin.Context) {
 func (response *Response) UpdateSuccess(context *gin.Context) {
 	context.JSON(202, response)
 }
+
+func (response *Response) DeleteSuccess(context *gin.Context) {
+	context.JSON(200, response)
+}

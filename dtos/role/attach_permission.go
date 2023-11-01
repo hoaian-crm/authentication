@@ -1,6 +1,11 @@
 package role_dto
 
 type AttachRolePermission struct {
-	PermissionId uint `uri:"permissionId" binding:"must_found=permissions"`
-	RoleId       uint `uri:"roleId" binding:"must_found=roles"`
+	PermissionId int64 `uri:"permissionId" binding:"must_found=permissions"`
+	RoleId       int64 `uri:"roleId" binding:"must_found=roles"`
+}
+
+type AttachRolePatchPermisison struct {
+	RoleId        int64   `uri:"roleId"`
+	PermissionIds []int64 `json:"permissions"`
 }

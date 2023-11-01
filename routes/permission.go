@@ -2,6 +2,7 @@ package routes
 
 import (
 	"main/config"
+	"main/constants"
 	"main/dtos"
 	"main/middlewares"
 	"main/models"
@@ -23,7 +24,7 @@ func NewPermissionController(route *gin.RouterGroup) {
 	route = route.Group("/permissions")
 	{
 
-		route.Use(middlewares.InitModel[models.Permission](&models.Permission{}))
+		route.Use(middlewares.InitModel[models.Permission](&models.Permission{}, constants.DATABASE_META_KEY))
 
 		route.POST("/", middlewares.BindBody[models.Permission]("data"), permissionService.Create)
 		route.GET("/", middlewares.BindQuery[dtos.Query]("query"), permissionService.List)

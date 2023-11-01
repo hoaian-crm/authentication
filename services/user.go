@@ -124,7 +124,7 @@ func (userService UserService) GetProfile(context *gin.Context) {
 
 	userRepository := repositories.UserRepository{}
 
-	userId := context.MustGet("userId").(uint)
+	userId := context.MustGet("userId").(int64)
 
 	user, _ := userRepository.FindOne(&models.User{
 		BaseModel: models.BaseModel{
@@ -183,7 +183,7 @@ func (userService UserService) ActiveUser(context *gin.Context) {
 // @Security BearerAuth
 func (userService UserService) UpdatePassword(context *gin.Context) {
 
-	userId := context.MustGet("userId").(uint)
+	userId := context.MustGet("userId").(int64)
 
 	user, _ := userService.Repository.FindOne(&models.User{
 		BaseModel: models.BaseModel{

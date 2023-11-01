@@ -10,14 +10,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitModel[Model any](instance *Model) gin.HandlerFunc {
+func InitModel[Model any](instance *Model, key string) gin.HandlerFunc {
 
 	return func(context *gin.Context) {
 
-		db, exits := context.Get(constants.DATABASE_META_KEY)
+		db, exits := context.Get(key)
 		if !exits {
 			db = config.Db.Model(instance)
-			context.Set(constants.DATABASE_META_KEY, db)
+			context.Set(key, db)
 		}
 		context.Next()
 	}

@@ -2,7 +2,6 @@ package services
 
 import (
 	"database/sql"
-	"fmt"
 	"main/config"
 	"main/constants"
 	"main/dtos"
@@ -78,6 +77,7 @@ func (service RoleService) List(c *gin.Context) {
 
 func (service RoleService) AttachPermission(c *gin.Context) {
 	db := c.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
+	permissionDb := c.MustGet("permission_db").(*gorm.DB)
 	data := c.MustGet("data").(role_dto.AttachRolePermission)
 
 	role := models.Role{
@@ -86,7 +86,91 @@ func (service RoleService) AttachPermission(c *gin.Context) {
 		},
 	}
 
+	permission := models.Permission{
+		BaseModel: models.BaseModel{
+			ID: data.PermissionId,
+		},
+	}
+
+	permissionDb.Where(&permission).Find(&permission)
+	db.Model(&role).Association("Permissions").Append(&permission)
+	db.Where(&role).Preload("Permissions").First(&role)
+
+	response := config.Response{
+		Data: config.ResponseData{
+			Result: role,
+		},
+		Messages: []config.Message{
+			config.Messages["update_success"],
+		},
+	}
+
+	response.UpdateSuccess(c)
+
+}
+
+func (service RoleService) DetachPermission(c *gin.Context) {
+	db := c.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
+	permissionDb := c.MustGet("permission_db").(*gorm.DB)
+	data := c.MustGet("data").(role_dto.DetachPermission)
+
+	role := models.Role{
+		BaseModel: models.BaseModel{
+			ID: data.RoleId,
+		},
+	}
+
+	permission := models.Permission{
+		BaseModel: models.BaseModel{
+			ID: data.PermissionId,
+		},
+	}
+
+	permissionDb.Where(&permission).Find(&permission)
+
+	creator := config.Db
+	creator.Model(&role).Association("Permissions").Delete(&permission)
+
 	db.Where(&role).First(&role)
 
-	fmt.Printf("role: %v\n", role)
+	response := config.Response{
+		Data: config.NoData(),
+		Messages: []config.Message{
+			config.Messages["delete_success"],
+		},
+	}
+
+	response.DeleteSuccess(c)
+}
+
+func (service RoleService) AttachPatchPermisson(c *gin.Context) {
+	db := c.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
+	permisisonDb := c.MustGet("permission_db").(*gorm.DB)
+	data := c.MustGet("data").(role_dto.AttachRolePatchPermisison)
+	uri := c.MustGet("uri").(role_dto.AttachRolePatchPermisison)
+
+	data.RoleId = uri.RoleId
+	role := models.Role{
+		BaseModel: models.BaseModel{
+			ID: data.RoleId,
+		},
+	}
+
+	permissions := []models.Permission{}
+	permisisonDb.Where("id in ?", data.PermissionIds).Find(&permissions)
+
+	db.Model(&role).Association("Permissions").Append(&permissions)
+	db.Where(&role).First(&role)
+
+	response := config.Response{
+		Data: config.ResponseData{
+			Result: role,
+		},
+		Messages: []config.Message{
+			config.Messages["update_success"],
+		},
+	}
+
+	response.UpdateSuccess(c)
+
 }
