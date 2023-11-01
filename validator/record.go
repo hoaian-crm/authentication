@@ -2,6 +2,7 @@ package validator
 
 import (
 	"main/config"
+
 	// "reflect"
 	"strings"
 
@@ -16,9 +17,19 @@ var mustUnique validator.Func = func(fl validator.FieldLevel) bool {
 	result := map[string]interface{}{}
 
 	config.Db.Table(table).Where(condition).Take(&result)
-	if len(result) == 0 {
-		return true
-	}
+	return len(result) == 0
+}
 
-	return false
+var mustFound validator.Func = func(fl validator.FieldLevel) bool {
+
+	// idString, _ := utils.NumberToString(fl.Field())
+
+	condition := map[string]interface{}{
+		"id": fl.Field(),
+	}
+	table := fl.Param()
+	result := map[string]interface{}{}
+
+	config.Db.Table(table).Where(condition).Take(&result)
+	return len(result) > 0
 }

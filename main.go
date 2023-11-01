@@ -40,6 +40,7 @@ func main() {
 	{
 		routes.NewUserController(api)
 		routes.NewPermissionController(api)
+		routes.NewRoleController(api)
 	}
 
 	mail_queue.New()

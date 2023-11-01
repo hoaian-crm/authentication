@@ -146,4 +146,8 @@ var Messages = map[string]Message{
 		Code:        26,
 		Description: "not found channel",
 	},
+	"must_found": {
+		Code:        27,
+		Description: "field must be found",
+	},
 }

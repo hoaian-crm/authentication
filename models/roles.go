@@ -5,5 +5,5 @@ type Role struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 
-	Permission []Permission `gorm:"many2many:permissions;" json:"permissions"`
+	Permissions []Permission `json:"permissions" gorm:"many2many:role_permissions;"`
 }
