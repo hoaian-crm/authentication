@@ -11,6 +11,7 @@ func ValidatorBinding() {
 		v.RegisterValidation("is_not_empty", isNotEmpty)
 		v.RegisterValidation("min_length", minLength)
 		v.RegisterValidation("must_unique", mustUnique)
+		v.RegisterValidation("must_found", mustFound)
 		v.RegisterValidation("is_number", isNumber)
 	}
 }

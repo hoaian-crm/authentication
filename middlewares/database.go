@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"main/config"
 	"main/constants"
 	"main/utils"
@@ -9,15 +10,25 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitModel[Model any](instance *Model) gin.HandlerFunc {
+func InitModel[Model any](instance *Model, key string) gin.HandlerFunc {
 
 	return func(context *gin.Context) {
 
-		db, exits := context.Get(constants.DATABASE_META_KEY)
+		db, exits := context.Get(key)
 		if !exits {
 			db = config.Db.Model(instance)
-			context.Set(constants.DATABASE_META_KEY, db)
+			context.Set(key, db)
 		}
+		context.Next()
+	}
+}
+
+func Association(a string) gin.HandlerFunc {
+	return func(context *gin.Context) {
+		db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
+		db.Association(a)
+		fmt.Printf("db.Error: %v\n", db.Error)
+		context.Set(constants.DATABASE_META_KEY, db)
 		context.Next()
 	}
 }

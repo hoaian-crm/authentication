@@ -69,6 +69,7 @@ func BindUri[Dto any](key string) gin.HandlerFunc {
 				Messages: messages,
 			}
 			response.BadRequest(context)
+			context.Abort()
 			return
 		}
 		context.Set(key, result)

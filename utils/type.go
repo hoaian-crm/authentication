@@ -6,21 +6,21 @@ import (
 	"strings"
 )
 
-func StringToNumber(value string) (int, error) {
+func StringToNumber(value string) (int64, error) {
 	result, err := strconv.Atoi(value)
 
-	return result, err
+	return int64(result), err
 }
 
-func SplitStringToNumbers(value string, spliter string) ([]int, error) {
+func SplitStringToNumbers(value string, spliter string) ([]int64, error) {
 
-	var result []int
+	var result []int64
 	var err error
 
 	for i, str := range strings.Split(value, spliter) {
 		result[i], err = StringToNumber(str)
 		if err != nil {
-			return []int{}, err
+			return []int64{}, err
 		}
 	}
 

@@ -19,7 +19,7 @@ func (EmailRepository EmailRepository) SendMailToUser(data *models.Email) {
 
 	user, _ := userRepository.FindOne(&models.User{
 		BaseModel: models.BaseModel{
-			ID: uint(userId),
+			ID: userId,
 		},
 	})
 

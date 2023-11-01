@@ -3,6 +3,7 @@ package routes
 import (
 	"main/base"
 	"main/config"
+	"main/constants"
 	user_dto "main/dtos/user"
 	"main/middlewares"
 	"main/models"
@@ -24,7 +25,7 @@ func NewUserController(route *gin.RouterGroup) {
 	route = route.Group("/users")
 	{
 
-		route.Use(middlewares.InitModel[models.User](&models.User{}))
+		route.Use(middlewares.InitModel[models.User](&models.User{}, constants.DATABASE_META_KEY))
 
 		route.GET("/list", middlewares.BindQuery[user_dto.ListUserDto]("query"), userService.ListUser)
 
