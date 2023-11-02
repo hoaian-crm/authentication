@@ -44,7 +44,7 @@ func Authorization() gin.HandlerFunc {
 			context.Abort()
 			return
 		}
-		context.Set("userId", uint(value))
+		context.Set("userId", value)
 		context.Next()
 	}
 }
