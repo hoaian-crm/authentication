@@ -41,6 +41,7 @@ func (service RoleService) List(c *gin.Context) {
 
 	if query.Keyword != "" {
 		query.Keyword = "%" + query.Keyword + "%"
+		db.Distinct()
 		db.Joins("left join role_permissions on role_permissions.role_id = roles.id")
 		db.Joins("left join permissions on role_permissions.permission_id = permissions.id")
 		db.Where("roles.name like @Keyword or roles.description like @Keyword or permissions.name like @Keyword or permissions.description like @Keyword or permissions.policy like @Keyword",
