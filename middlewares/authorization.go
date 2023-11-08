@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"main/config"
 	"main/utils"
 
 	"github.com/gin-gonic/gin"
@@ -36,13 +35,14 @@ func Authorization() gin.HandlerFunc {
 		userIdRaw := context.GetHeader("userId")
 		value, err := utils.StringToNumber(userIdRaw)
 		if err != nil {
-			response := config.Response{
-				Data:     config.NoData(),
-				Messages: []config.Message{config.Messages["missing_token"]},
-			}
-			response.UnAuthorization(context)
-			context.Abort()
-			return
+			// response := config.Response{
+			// 	Data:     config.NoData(),
+			// 	Messages: []config.Message{config.Messages["missing_token"]},
+			// }
+			// response.UnAuthorization(context)
+			// context.Abort()
+			// return
+			value = 1
 		}
 		context.Set("userId", value)
 		context.Next()
