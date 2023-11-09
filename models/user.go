@@ -20,6 +20,8 @@ type User struct {
 	OtpCode      string `json:"-" gorm:"column:otpCode"`
 	Active       bool   `json:"active"`
 	Iss          string `json:"-"`
+	RoleId       string `json:"-"`
+	Role         Role   `json:"role"`
 }
 
 type InternalUser struct {

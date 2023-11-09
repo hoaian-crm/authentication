@@ -9,7 +9,7 @@ import (
 )
 
 type Repository[Model any] struct {
-	model Model 
+	model Model
 }
 
 func (repository Repository[Model]) CreateOne(record *Model) *gorm.DB {
@@ -19,7 +19,9 @@ func (repository Repository[Model]) CreateOne(record *Model) *gorm.DB {
 
 func (repository Repository[Model]) FindOne(filter *Model) (Model, error) {
 	var record Model
-	result := config.Db.Model(&filter).Where(&filter).First(&record)
+	result := config.Db.Model(&filter).
+		Where(&filter).
+		First(&record)
 	return record, result.Error
 }
 
