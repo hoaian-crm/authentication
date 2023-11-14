@@ -6,4 +6,6 @@ type Permission struct {
 	Description string `json:"description" binding:"is_not_empty"`
 	Policy      string `json:"policy" binding:"is_not_empty"`
 	Resource    string `json:"resource" binding:"is_not_empty"`
+	Upstream    string `json:"upstream"`
+	Method      string `json:"method"`
 }
