@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"main/base"
 	"main/config"
+	"main/constants"
 	user_dto "main/dtos/user"
 	"main/middlewares"
 	"main/models"
@@ -24,17 +24,18 @@ func NewUserController(route *gin.RouterGroup) {
 	route = route.Group("/users")
 	{
 
-		route.Use(middlewares.InitModel[models.User](&models.User{}))
+		route.Use(middlewares.InitModel[models.User](&models.User{}, constants.DATABASE_META_KEY))
+		route.Use(middlewares.Association("Roles"))
 
-		route.GET("/", middlewares.BindQuery[user_dto.ListUserDto]("query"), userService.ListUser)
+		route.GET("/list", middlewares.BindQuery[user_dto.ListUserDto]("query"), userService.ListUser)
 
 		route.POST("/register", userService.Register)
 
-		route.POST("/login", base.GetData[user_dto.LoginDto], userService.Login)
+		route.POST("/login", middlewares.BindBody[user_dto.LoginDto]("data"), userService.Login)
 
 		route.GET("/profile", middlewares.Authorization(), userService.GetProfile)
 
-		route.PUT("/active", userService.ActiveUser)
+		route.PUT("/active", middlewares.BindBody[user_dto.ActiveUserDto]("data"), userService.ActiveUser)
 
 		route.PUT("/update_password", middlewares.Authorization(), userService.UpdatePassword)
 

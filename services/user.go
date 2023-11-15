@@ -13,6 +13,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type UserService struct {
@@ -20,15 +21,6 @@ type UserService struct {
 	cache repositories.CacheRepository[models.User]
 }
 
-// @Summary	Register new user
-// @Schemes
-// @Description				Call this api to register new user
-// @Accept						json
-// @Produce					json
-// @Router						/users/register [post]
-// @Tags User
-// @success 200 {object} config.Response{data=responses.RegisterResponse}
-// @Param   request  body     user_dto.Create  true "Login data"
 func (userService UserService) Register(context *gin.Context) {
 	var dto models.User
 	if err := context.ShouldBind(&dto); err != nil {
@@ -70,24 +62,18 @@ func (userService UserService) Register(context *gin.Context) {
 	response.Created(context)
 }
 
-// @Summary	Login user
-// @Schemes
-// @Description				Call this api to login
-// @Accept						json
-// @Produce					json
-// @Router						/users/login [post]
-// @Tags User
-// @success 200 {object} config.Response{data=responses.LoginResponse}
-// @Param   request  body     user_dto.LoginDto  true "Login data"
 func (userService UserService) Login(context *gin.Context) {
 
 	// data := base.GetData[user_dto.LoginDto](context)
 	data := context.MustGet("data").(user_dto.LoginDto)
+	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
 
-	userRecord, _ := userService.Repository.FindOne(&models.User{
+	userRecord := models.User{
 		Email:  data.Email,
 		Active: true,
-	})
+	}
+
+	db.Where(&userRecord).Preload("Role").Preload("Role.Permissions").First(&userRecord)
 
 	if utils.ComparePassword(userRecord.Password, data.Password) {
 		messages := []config.Message{config.Messages["login_success"]}
@@ -112,18 +98,11 @@ func (userService UserService) Login(context *gin.Context) {
 	response.BadRequest(context)
 }
 
-// @Tags User
-// @Summary Get user's profile
-// @Description  Get user's profile by access token
-// @Accept json
-// @Schemes
-// @Router /users/profile [get]
-// @Security BearerAuth
 func (userService UserService) GetProfile(context *gin.Context) {
 
 	userRepository := repositories.UserRepository{}
 
-	userId := context.MustGet("userId").(uint)
+	userId := context.MustGet("userId").(int64)
 
 	user, _ := userRepository.FindOne(&models.User{
 		BaseModel: models.BaseModel{
@@ -140,15 +119,7 @@ func (userService UserService) GetProfile(context *gin.Context) {
 	response.GetSuccess(context)
 }
 
-// @Tags User
-// @Summary Active account
-// @Description  Active new user
-// @Accept json
-// @Schemes
-// @Router /users/active [put]
-// @Param request body user_dto.ActiveUserDto true "Active user data"
 func (userService UserService) ActiveUser(context *gin.Context) {
-	// data := base.GetData[user_dto.ActiveUserDto](context)
 	data := context.MustGet("data").(user_dto.ActiveUserDto)
 	userRecord, _ := userService.Repository.FindOne(&models.User{
 		Email: data.Email,
@@ -172,17 +143,9 @@ func (userService UserService) ActiveUser(context *gin.Context) {
 	response.BadRequest(context)
 }
 
-// @Tags User
-// @Summary Update password of user
-// @Description  Call api to update password
-// @Accept json
-// @Schemes
-// @Router /users/update_password [put]
-// @Param request body user_dto.UpdatePassword true "Update password data"
-// @Security BearerAuth
 func (userService UserService) UpdatePassword(context *gin.Context) {
 
-	userId := context.MustGet("userId").(uint)
+	userId := context.MustGet("userId").(int64)
 
 	user, _ := userService.Repository.FindOne(&models.User{
 		BaseModel: models.BaseModel{
@@ -221,15 +184,20 @@ func (userService UserService) ListUser(context *gin.Context) {
 	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
 
 	// Search
-	db.Where("displayName like ? or email like ?", "%"+query.DisplayName+"%", "%"+query.Email+"%")
+	db.Where("\"displayName\" like ? or email like ?", "%"+query.Keyword+"%", "%"+query.Keyword+"%")
 
 	// Order
-	db.Order(query.Order)
+	if query.Order != "" {
+		db.Order(clause.OrderByColumn{Column: clause.Column{Name: query.Order}, Desc: query.Direction == "desc"})
+	}
 
 	// Count records
 	var total int64
 	db.Count(&total)
 	db.Limit(query.Limit)
+
+	// Offset
+	db.Offset(query.Offset)
 
 	// Get result
 	result := []models.User{}

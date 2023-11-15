@@ -10,6 +10,7 @@ var Db *gorm.DB
 
 func ConnectDataBase() {
 	dsn := EnvirontmentVariables.GormDSN
+
 	localDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})

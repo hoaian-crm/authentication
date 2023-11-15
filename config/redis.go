@@ -20,7 +20,7 @@ func ConnectRedis() {
 	client := redis.NewClient(&redis.Options{
 		Addr:     EnvirontmentVariables.RedisHost,
 		Password: EnvirontmentVariables.RedisPass,
-		DB:       redisDb,
+		DB:       int(redisDb),
 	})
 
   RedisClient = *client;

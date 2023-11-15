@@ -69,6 +69,7 @@ func BindUri[Dto any](key string) gin.HandlerFunc {
 				Messages: messages,
 			}
 			response.BadRequest(context)
+			context.Abort()
 			return
 		}
 		context.Set(key, result)
@@ -88,7 +89,7 @@ func MergeBindData[DataSource any, DataTarget any](source string, target string,
 		for _, key := range selects {
 			data := strings.Split(key, ":")
 			if len(data) < 2 {
-				panic("Mssing key to copy")
+				panic("Missing key to copy")
 			}
 
 			value := reflect.ValueOf(dataSource).FieldByName(data[0])

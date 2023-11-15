@@ -20,6 +20,8 @@ type User struct {
 	OtpCode      string `json:"-" gorm:"column:otpCode"`
 	Active       bool   `json:"active"`
 	Iss          string `json:"-"`
+	RoleId       string `json:"-"`
+	Role         Role   `json:"role"`
 }
 
 type InternalUser struct {
@@ -67,7 +69,6 @@ func (user *User) SignToken() string {
 		*user,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
-			Issuer:    user.Iss,
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)

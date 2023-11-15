@@ -44,5 +44,7 @@ func Publish[T any](queueName string, data T) {
 			Body:        []byte(dataEncoded),
 		}); err != nil {
 		fmt.Printf("Error when publish message is: %v\n", err)
+	} else {
+		fmt.Printf("Push data to queue %v with data is %v successfully", queueName, data)
 	}
 }
