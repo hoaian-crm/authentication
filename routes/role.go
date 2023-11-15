@@ -26,7 +26,6 @@ func NewRoleController(route *gin.RouterGroup) {
 	{
 
 		route.Use(middlewares.InitModel[models.Role](&models.Role{}, constants.DATABASE_META_KEY))
-		route.Use(middlewares.Association("Permissions"))
 
 		route.POST("/", middlewares.BindBody[models.Role]("data"), roleService.Create)
 		route.GET("/", middlewares.BindQuery[dtos.Query]("query"), roleService.List)
