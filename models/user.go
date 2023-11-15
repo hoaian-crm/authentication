@@ -69,7 +69,6 @@ func (user *User) SignToken() string {
 		*user,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
-			Issuer:    user.Iss,
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
