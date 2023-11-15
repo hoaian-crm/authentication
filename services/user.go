@@ -73,7 +73,7 @@ func (userService UserService) Login(context *gin.Context) {
 		Active: true,
 	}
 
-	db.Where(&userRecord).First(&userRecord)
+	db.Where(&userRecord).Preload("Role").Preload("Role.Permissions").First(&userRecord)
 
 	if utils.ComparePassword(userRecord.Password, data.Password) {
 		messages := []config.Message{config.Messages["login_success"]}
