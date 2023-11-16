@@ -189,7 +189,7 @@ func (userService UserService) ListUser(context *gin.Context) {
 
 	// Get result
 	result := []models.User{}
-	db.Find(&result)
+	db.Preload("Role").Find(&result)
 
 	// Response to client
 	response := config.Response{
