@@ -60,7 +60,7 @@ func (userService UserService) Login(context *gin.Context) {
 		Active: true,
 	}
 
-	db.Where(&userRecord).Preload("Role").Preload("Role.Permissions").First(&userRecord)
+	db.Where(&userRecord).First(&userRecord)
 
 	if utils.ComparePassword(userRecord.Password, data.Password) {
 		messages := []config.Message{config.Messages["login_success"]}
@@ -87,15 +87,17 @@ func (userService UserService) Login(context *gin.Context) {
 
 func (userService UserService) GetProfile(context *gin.Context) {
 
-	userRepository := repositories.UserRepository{}
+	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
 
-	userId := context.MustGet("userId").(int64)
+	userId := context.MustGet("UserId").(int64)
 
-	user, _ := userRepository.FindOne(&models.User{
+	var user = models.User{
 		BaseModel: models.BaseModel{
 			ID: userId,
 		},
-	})
+	}
+
+	db.Where(&user).Preload("Role").Preload("Role.Permissions").First(&user)
 
 	response := config.Response{
 		Data: config.ResponseData{
