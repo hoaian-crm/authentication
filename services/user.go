@@ -51,7 +51,6 @@ func (userService UserService) Register(context *gin.Context) {
 
 func (userService UserService) Login(context *gin.Context) {
 
-	// data := base.GetData[user_dto.LoginDto](context)
 	data := context.MustGet("data").(user_dto.LoginDto)
 	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
 
@@ -60,7 +59,7 @@ func (userService UserService) Login(context *gin.Context) {
 		Active: true,
 	}
 
-	db.Where(&userRecord).First(&userRecord)
+	db.Where(&userRecord).Preload("Role").First(&userRecord)
 
 	if utils.ComparePassword(userRecord.Password, data.Password) {
 		messages := []config.Message{config.Messages["login_success"]}
