@@ -132,10 +132,12 @@ func (service RoleService) DetachPermission(c *gin.Context) {
 	creator := config.Db
 	creator.Model(&role).Association("Permissions").Delete(&permission)
 
-	db.Where(&role).First(&role)
+	db.Where(&role).Preload("Permissions").First(&role)
 
 	response := config.Response{
-		Data: config.NoData(),
+		Data: config.ResponseData{
+			Result: role,
+		},
 		Messages: []config.Message{
 			config.Messages["delete_success"],
 		},
