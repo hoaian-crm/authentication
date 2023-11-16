@@ -34,7 +34,7 @@ func SetupEnvirontment() {
 		fmt.Print("Error loading .env file")
 	}
 
-	defaultRoleId, _ := utils.StringToNumber(os.Getenv("DEFAULT_ROLE"))
+	defaultRoleId, _ := utils.StringToNumber(os.Getenv("DEFAULT_ROLE_ID"))
 
 	EnvirontmentVariables = Environtment{
 		GormDSN:         os.Getenv("GORM_DSN"),
