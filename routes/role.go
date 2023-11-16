@@ -26,7 +26,6 @@ func NewRoleController(route *gin.RouterGroup) {
 	{
 
 		route.Use(middlewares.InitModel[models.Role](&models.Role{}, constants.DATABASE_META_KEY))
-		route.Use(middlewares.Association("Permissions"))
 
 		route.POST("/", middlewares.BindBody[models.Role]("data"), roleService.Create)
 		route.GET("/", middlewares.BindQuery[dtos.Query]("query"), roleService.List)
@@ -38,7 +37,7 @@ func NewRoleController(route *gin.RouterGroup) {
 			middlewares.BindUri[role_dto.DetachPermission]("data"),
 			middlewares.InitModel[models.Permission](&models.Permission{}, "permission_db"),
 			roleService.DetachPermission)
-		route.PATCH("/:roleId/permisisons",
+		route.PATCH("/:roleId/permissions",
 			middlewares.BindBody[role_dto.AttachRolePatchPermisison]("data"),
 			middlewares.BindUri[role_dto.AttachRolePatchPermisison]("uri"),
 			middlewares.InitModel[models.Permission](&models.Permission{}, "permission_db"),

@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"main/utils"
 	"os"
 	"strings"
 
@@ -22,6 +23,7 @@ type Environtment struct {
 	ChannelRequires []string
 	RabbitMqUri     string
 	UserIss         string
+	DefaultRoleId   int64
 }
 
 var EnvirontmentVariables Environtment
@@ -31,6 +33,9 @@ func SetupEnvirontment() {
 	if err != nil {
 		fmt.Print("Error loading .env file")
 	}
+
+	defaultRoleId, _ := utils.StringToNumber(osGetenv("DEFAULT_ROLE_ID"))
+
 	EnvirontmentVariables = Environtment{
 		GormDSN:         os.Getenv("GORM_DSN"),
 		DefaultAvatar:   os.Getenv("DEFAULT_AVATAR"),
@@ -44,6 +49,6 @@ func SetupEnvirontment() {
 		RedisDb:         os.Getenv("REDIS_DB"),
 		ChannelRequires: strings.Split(os.Getenv("CHANNEL_REQUIRES"), ","),
 		RabbitMqUri:     os.Getenv("AMPQ_LINK"),
-		UserIss:         os.Getenv("USER_ISS"),
+		DefaultRoleId:   defaultRoleId,
 	}
 }

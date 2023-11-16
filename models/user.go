@@ -20,7 +20,7 @@ type User struct {
 	OtpCode      string `json:"-" gorm:"column:otpCode"`
 	Active       bool   `json:"active"`
 	Iss          string `json:"-"`
-	RoleId       string `json:"-"`
+	RoleId       int64  `json:"-"`
 	Role         Role   `json:"role"`
 }
 

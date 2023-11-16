@@ -22,42 +22,29 @@ type UserService struct {
 }
 
 func (userService UserService) Register(context *gin.Context) {
-	var dto models.User
-	if err := context.ShouldBind(&dto); err != nil {
-		messages := config.MessagesBuilder(err)
-		response := config.Response{
-			Data:     config.NoData(),
-			Messages: messages,
-		}
-		response.BadRequest(context)
-		return
+
+	data := context.MustGet("data").(models.User)
+	db := context.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
+
+	data.Role = models.Role{
+		BaseModel: models.BaseModel{
+			ID: config.EnvirontmentVariables.DefaultRoleId,
+		},
 	}
 
-	dto.Iss = config.EnvirontmentVariables.UserIss
+	db.Create(&data)
 
-	createdRecord := userService.Repository.CreateOne(&dto)
-	if createdRecord.Error != nil {
-		response := config.Response{
-			Data: config.NoData(),
-			Messages: []config.Message{{
-				Code:        -1,
-				Description: createdRecord.Error.Error(),
-			}},
-		}
-		response.InternalServerError(context)
-		return
-	}
 	response := config.Response{
 		Data: config.ResponseData{
 			Limit:  1,
 			Total:  1,
 			Offset: 0,
-			Result: dto,
+			Result: data,
 		},
 		Messages: []config.Message{},
 	}
 
-	go user_queue.UserRegister(dto.GetInternal())
+	go user_queue.UserRegister(data.GetInternal())
 
 	response.Created(context)
 }

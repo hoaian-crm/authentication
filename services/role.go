@@ -160,7 +160,7 @@ func (service RoleService) AttachPatchPermisson(c *gin.Context) {
 	permissions := []models.Permission{}
 	permisisonDb.Where("id in ?", data.PermissionIds).Find(&permissions)
 
-	db.Model(&role).Association("Permissions").Append(&permissions)
+	db.Model(&role).Where("id = ?", role.ID).Association("Permissions").Append(permissions)
 	db.Where("id = ?", role.ID).Preload("Permissions").First(&role)
 
 	response := config.Response{
