@@ -45,5 +45,7 @@ func main() {
 
 	mail_queue.New()
 
+	config.GrpcConnect()
+
 	r.Run()
 }

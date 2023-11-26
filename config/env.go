@@ -24,6 +24,7 @@ type Environtment struct {
 	RabbitMqUri     string
 	UserIss         string
 	DefaultRoleId   int64
+	EventGrpc       string
 }
 
 var EnvirontmentVariables Environtment
@@ -50,5 +51,6 @@ func SetupEnvirontment() {
 		ChannelRequires: strings.Split(os.Getenv("CHANNEL_REQUIRES"), ","),
 		RabbitMqUri:     os.Getenv("AMPQ_LINK"),
 		DefaultRoleId:   defaultRoleId,
+		EventGrpc:       os.Getenv("EVENT_GRPC"),
 	}
 }
