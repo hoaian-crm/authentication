@@ -12,7 +12,7 @@ import (
 var GrpcClient pb.IEventControllerClient
 
 func GrpcConnect() {
-	connection, err := grpc.Dial("localhost:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	connection, err := grpc.Dial(EnvirontmentVariables.EventGrpc, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	fmt.Printf("connection: %v\n", connection)
 
