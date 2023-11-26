@@ -6,10 +6,12 @@ import (
 	"main/constants"
 	user_dto "main/dtos/user"
 	"main/models"
-	user_queue "main/queue/user"
+	"main/prototypes/gen/go/pb"
 	"main/repositories"
 	"main/responses"
 	"main/utils"
+
+	c "context"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -44,7 +46,23 @@ func (userService UserService) Register(context *gin.Context) {
 		Messages: []config.Message{},
 	}
 
-	go user_queue.UserRegister(data.GetInternal())
+	template := "otp"
+
+	config.GrpcClient.Emit(c.Background(), &pb.EmitEventDto{
+		Name: "user_register",
+		Payload: &pb.EmitEventDto_Payload{
+			Value: &pb.EmitEventDto_Payload_Mail{
+				Mail: &pb.SendMailDto{
+					To:       "",
+					Subject:  "",
+					Template: &template,
+					Context: map[string]string{
+						"otp": data.OtpCode,
+					},
+				},
+			},
+		},
+	})
 
 	response.Created(context)
 }
