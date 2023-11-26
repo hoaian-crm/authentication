@@ -53,8 +53,8 @@ func (userService UserService) Register(context *gin.Context) {
 		Payload: &pb.EmitEventDto_Payload{
 			Value: &pb.EmitEventDto_Payload_Mail{
 				Mail: &pb.SendMailDto{
-					To:       "",
-					Subject:  "",
+					To:       data.Email,
+					Subject:  "Verify otp code",
 					Template: &template,
 					Context: map[string]string{
 						"otp": data.OtpCode,
