@@ -43,5 +43,7 @@ func NewRoleController(route *gin.RouterGroup) {
 			middlewares.InitModel[models.Permission](&models.Permission{}, "permission_db"),
 			roleService.AttachPatchPermisson,
 		)
+		route.PUT("/:roleId", middlewares.BindUri[role_dto.UpdateRoleUri]("uri"), middlewares.BindBody[models.Role]("data"), roleService.Update)
+		route.DELETE("/:roleId", middlewares.BindUri[role_dto.DeleteRoleUri]("uri"), roleService.Delete)
 	}
 }
