@@ -177,3 +177,44 @@ func (service RoleService) AttachPatchPermisson(c *gin.Context) {
 	response.UpdateSuccess(c)
 
 }
+
+func (service RoleService) Update(c *gin.Context) {
+	db := c.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
+	data := c.MustGet("data").(models.Role)
+	uri := c.MustGet("uri").(role_dto.UpdateRoleUri)
+
+	data.ID = uri.RoleId
+	db.Save(&data)
+
+	db.Where("id = ?", data.ID).Preload("Permissions").First(&data)
+
+	response := config.Response{
+		Data: config.ResponseData{
+			Result: data,
+		},
+		Messages: []config.Message{
+			config.Messages["update_success"],
+		},
+	}
+
+	response.UpdateSuccess(c)
+}
+
+func (service RoleService) Delete(c *gin.Context) {
+	db := c.MustGet(constants.DATABASE_META_KEY).(*gorm.DB)
+	uri := c.MustGet("uri").(role_dto.DeleteRoleUri)
+
+	var role models.Role
+	db.Where("id = ?", uri.RoleId).Delete(&role)
+
+	response := config.Response{
+		Data: config.ResponseData{
+			Result: uri.RoleId,
+		},
+		Messages: []config.Message{
+			config.Messages["deleted_success"],
+		},
+	}
+
+	response.DeleteSuccess(c)
+}
